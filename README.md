@@ -32,6 +32,8 @@ chmod +x run.sh RCKangaroo
 
 Same open pool, no token, all GPUs / herd split. Keep `RCKangaroo` and the `.cubin` files in the same folder.
 
+**GPU kernels:** Ada/Blackwell (sm89 / sm120) load turbo cubins when present. Ampere **A100 (sm_80)** and older GPUs use the **legacy CUDA** path embedded in the binary (no turbo cubin; `sm_80` gencode included). Expect a console line like `legacy CUDA kernels (no turbo cubin)` on A100 — that is normal.
+
 ## Protocol (summary)
 
 1. Worker: `HELLO name=… [herd=0|1]` (token optional / empty)
