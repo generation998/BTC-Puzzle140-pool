@@ -1,0 +1,9 @@
+windows/*.pdb
+windows/rck_pool_spool*
+linux/rck_pool_spool*
+secrets/
+work/
+*.jsonl
+FOUND.txt
+.DS_Store
+Thumbs.db

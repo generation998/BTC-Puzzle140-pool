@@ -1,0 +1,15 @@
+﻿{
+  "engine": "rckangaroo-sota",
+  "pubkey": "031f6a332d3c5c4f2de2378c012f429cd109ba07d69690c6c701b6bb87860d6640",
+  "start": "80000000000000000000000000000000000",
+  "end": "fffffffffffffffffffffffffffffffffff",
+  "range_bits": 139,
+  "listen": "0.0.0.0",
+  "port": 17413,
+  "status_port": 17490,
+  "token": "YOUR_TOKEN_HERE",
+  "dp": 30,
+  "secrets_dir": "secrets",
+  "work_dir": "work",
+  "persist": true
+}
