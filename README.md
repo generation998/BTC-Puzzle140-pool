@@ -16,7 +16,9 @@ The pool server merges distinguished points . Workers receive a JOB (pubkey/rang
 
 Open the `windows/` folder and double-click **`Run.bat`**.
 
-That joins `72.62.76.118:17413` with no token, picks a worker name automatically, and uses all GPUs (tame/wild herd split when more than one GPU is present). Keep `RCKangaroo.exe` and the `.cubin` files in the same folder.
+That joins `72.62.76.118:17413` with no token, picks a worker name automatically, and uses all GPUs. **One GPU runs mixed herds** (same KangCnt / MK/s as stock solo). **Two or more GPUs** alternate tame/wild. Keep `RCKangaroo.exe` and the `.cubin` files in the same folder (cwd) so turbo kernels load.
+
+**Speed:** on an RTX 4070 Laptop expect **~900–1100 MK/s** in the worker console (`Speed: N MKeys/s`) — matching stock RCKangaroo turbo. Status `dps_per_s` at dp=30 is only a few DPs/s; that is not GH/s.
 
 Needs: recent NVIDIA Game Ready / Studio driver.
 

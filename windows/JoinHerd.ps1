@@ -1,4 +1,4 @@
-﻿# Launch one worker per GPU with alternating tame/wild herd split.
+﻿# Launch one worker per GPU. 1 GPU = mixed herds (stock path). 2+ = tame/wild split.
 param(
   [string]$Pool = "72.62.76.118:17413",
   [string]$Token = "",
@@ -24,25 +24,22 @@ if ($indexes.Count -lt 1) { throw "No GPUs selected." }
 if (-not $WorkerPrefix) { $WorkerPrefix = "rck-" + $env:COMPUTERNAME }
 
 $join = Join-Path $PSScriptRoot "JoinWorker.ps1"
+$multi = $indexes.Count -gt 1
 Write-Host "Pool  $Pool"
-Write-Host "GPUs  $($indexes -join ', ')  (even=tame, odd=wild)"
+Write-Host ("GPUs  {0}" -f ($indexes -join ', '))
+Write-Host ("Mode  {0}" -f $(if ($multi) { "herd-split (even=tame, odd=wild)" } else { "mixed herds (matches stock solo MK/s)" }))
 
 for ($i = 0; $i -lt $indexes.Count; $i++) {
   $gpu = $indexes[$i]
-  $herd = if (($i % 2) -eq 0) { "tame" } else { "wild" }
-  $name = "{0}-{1}-g{2}" -f $WorkerPrefix, $herd, $gpu
-  $argsList = @(
-    "-NoProfile", "-ExecutionPolicy", "Bypass",
-    "-File", $join,
-    "-Pool", $Pool,
-    "-Worker", $name,
-    "-Herd", $herd,
-    "-Gpu", "$gpu"
-  )
-  if ($Token) { $argsList += @("-Token", $Token) }
+  $herd = ""
+  if ($multi) { $herd = if (($i % 2) -eq 0) { "tame" } else { "wild" } }
+  $name = if ($herd) { "{0}-{1}-g{2}" -f $WorkerPrefix, $herd, $gpu } else { "{0}-g{1}" -f $WorkerPrefix, $gpu }
+  $herdLabel = if ($herd) { $herd } else { "mixed" }
 
   if ($i -eq 0 -and $indexes.Count -eq 1) {
-    & $join -Pool $Pool -Worker $name -Herd $herd -Gpu "$gpu" -Token $Token
+    Write-Host ("[1/1] GPU {0} herd={1} worker={2}" -f $gpu, $herdLabel, $name)
+    if ($herd) { & $join -Pool $Pool -Worker $name -Herd $herd -Gpu "$gpu" -Token $Token }
+    else { & $join -Pool $Pool -Worker $name -Gpu "$gpu" -Token $Token }
     return
   }
 
@@ -63,8 +60,9 @@ for ($i = 0; $i -lt $indexes.Count; $i++) {
       Write-Host ("[{0}/{1}] GPU {2} herd={3} worker={4} (background)" -f ($j + 1), $indexes.Count, $gpu2, $herd2, $name2)
       $null = Start-Process -FilePath "powershell.exe" -ArgumentList $args2 -WorkingDirectory $PSScriptRoot -WindowStyle Minimized
     }
-    Write-Host ("[1/{0}] GPU {1} herd={2} worker={3}" -f $indexes.Count, $gpu, $herd, $name)
-    & $join -Pool $Pool -Worker $name -Herd $herd -Gpu "$gpu" -Token $Token
+    Write-Host ("[1/{0}] GPU {1} herd={2} worker={3}" -f $indexes.Count, $gpu, $herdLabel, $name)
+    if ($herd) { & $join -Pool $Pool -Worker $name -Herd $herd -Gpu "$gpu" -Token $Token }
+    else { & $join -Pool $Pool -Worker $name -Gpu "$gpu" -Token $Token }
     return
   }
 }

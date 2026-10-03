@@ -22,7 +22,13 @@ if [[ ${#GPUS[@]} -eq 0 ]]; then
 fi
 
 echo "Joining open pool $POOL (no token)"
-echo "GPUs: ${GPUS[*]}  (even=tame, odd=wild)"
+MULTI=0
+if (( ${#GPUS[@]} > 1 )); then MULTI=1; fi
+if (( MULTI )); then
+  echo "GPUs: ${GPUS[*]}  (even=tame, odd=wild)"
+else
+  echo "GPUs: ${GPUS[*]}  (mixed herds — matches stock solo MK/s)"
+fi
 
 PIDS=()
 cleanup() {
@@ -32,11 +38,14 @@ trap cleanup EXIT INT TERM
 
 for i in "${!GPUS[@]}"; do
   gpu="${GPUS[$i]}"
+  if (( ${#GPUS[@]} == 1 )); then
+    name="${PREFIX}-g${gpu}"
+    echo "[1/1] GPU $gpu herd=mixed worker=$name"
+    # No -herd: worker runs 1/3 tame + 2/3 wild like stock solo (same KangCnt / MK/s).
+    exec "$EXE" -pool "$POOL" -worker "$name" -gpu "$gpu"
+  fi
   if (( i % 2 == 0 )); then herd=tame; else herd=wild; fi
   name="${PREFIX}-${herd}-g${gpu}"
-  if (( ${#GPUS[@]} == 1 )); then
-    exec "$EXE" -pool "$POOL" -worker "$name" -herd "$herd" -gpu "$gpu"
-  fi
   if (( i == 0 )); then
     continue
   fi
