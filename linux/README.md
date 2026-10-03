@@ -23,5 +23,3 @@ Manual equivalent:
 - `JoinWorker.sh` — optional advanced join
 
 Status: http://72.62.76.118:17490/
-
-Private keys are recovered only on the pool server. Workers never receive the key.
