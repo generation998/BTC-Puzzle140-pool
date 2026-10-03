@@ -7,7 +7,7 @@
   "listen": "0.0.0.0",
   "port": 17413,
   "status_port": 17490,
-  "token": "YOUR_TOKEN_HERE",
+  "token": "",
   "dp": 30,
   "secrets_dir": "secrets",
   "work_dir": "work",

@@ -1,0 +1,6 @@
+*.sh text eol=lf
+linux/run.sh text eol=lf
+linux/JoinWorker.sh text eol=lf
+linux/RCKangaroo binary
+windows/*.exe binary
+*.cubin binary

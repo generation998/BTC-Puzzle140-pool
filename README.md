@@ -10,45 +10,29 @@ The pool server merges distinguished points and recovers the private key **only 
 |--|--|
 | DP port | `72.62.76.118:17413` |
 | Status | http://72.62.76.118:17490/ |
-| Auth | token required (ask the pool operator; do not commit real tokens) |
+| Auth | open (no token) |
 
-## Windows (turbo ready)
+## Windows: double-click `Run.bat`
 
-Files in `windows/`:
+Open the `windows/` folder and double-click **`Run.bat`**.
 
-- `RCKangaroo.exe`
-- `kernel_sm89.cubin` (Ada / RTX 40-series turbo)
-- `kernel_sm120.cubin` (newer GPUs)
-- `JoinWorker.ps1` / `JoinWorker.bat`
-- `JoinHerd.ps1` (2-GPU tame/wild split)
+That joins `72.62.76.118:17413` with no token, picks a worker name automatically, and uses all GPUs (tame/wild herd split when more than one GPU is present). Keep `RCKangaroo.exe` and the `.cubin` files in the same folder.
 
-`powershell
-cd windows
-.\JoinWorker.ps1 -Pool 72.62.76.118:17413 -Token YOUR_TOKEN -Worker gpu0
-`
+Needs: recent NVIDIA Game Ready / Studio driver.
 
-Two GPUs:
+## Linux: `./run.sh`
 
-`powershell
-.\JoinHerd.ps1 -Token YOUR_TOKEN -Gpus 0,1
-`
-
-Expect JOB `dp=30 range=139`. Keep cubins next to the exe (already in this folder).
-
-Needs: recent NVIDIA Game Ready / Studio driver. No Visual Studio required to run.
-
-## Linux
-
-See `linux/README.md`. Turbo cubins are included; the Linux executable must be built on a machine with CUDA Toolkit (not shipped in this release if no Linux build host was available).
-
-`ash
+```bash
 cd linux
-./JoinWorker.sh YOUR_TOKEN gpu0
-`
+chmod +x run.sh RCKangaroo
+./run.sh
+```
+
+Same open pool, no token, all GPUs / herd split. Keep `RCKangaroo` and the `.cubin` files in the same folder.
 
 ## Protocol (summary)
 
-1. Worker: `HELLO token=… name=… [herd=0|1]`
+1. Worker: `HELLO name=… [herd=0|1]` (token optional / empty)
 2. Server: `JOB herd=… dp=… range=… start=… end=… pubkey=…` / `ENDJOB`
 3. Worker: `DPS N` + N lines → Server: `ACK … solved=0|1` (never includes the key)
 
@@ -56,7 +40,7 @@ cd linux
 
 - Do not ship or sync a `secrets/` folder to workers.
 - Status JSON does not include private keys.
-- Replace `YOUR_TOKEN` with the operator-issued token; keep tokens out of public forks.
+- Keys remain server-only.
 
 ## License
 
