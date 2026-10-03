@@ -2,7 +2,7 @@
 
 GPU workers for the **RCKangaroo SOTA shared-DP pool** (Puzzle 140, dp=30).
 
-The pool server merges distinguished points and recovers the private key **only on the server**. Workers receive a JOB (pubkey/range/dp/herd) and upload DPs. They are never given the private key.
+The pool server merges distinguished points . Workers receive a JOB (pubkey/range/dp/herd) and upload DPs.
 
 ## Pool
 
@@ -34,13 +34,8 @@ Same open pool, no token, all GPUs / herd split. Keep `RCKangaroo` and the `.cub
 
 1. Worker: `HELLO name=… [herd=0|1]` (token optional / empty)
 2. Server: `JOB herd=… dp=… range=… start=… end=… pubkey=…` / `ENDJOB`
-3. Worker: `DPS N` + N lines → Server: `ACK … solved=0|1` (never includes the key)
+3. Worker: `DPS N` + N lines → Server: `ACK … solved=0|1` 
 
-## Safety
-
-- Do not ship or sync a `secrets/` folder to workers.
-- Status JSON does not include private keys.
-- Keys remain server-only.
 
 ## License
 
